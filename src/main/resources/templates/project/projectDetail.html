@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/project/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/project/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/project/sweetalert.min.js?ver=1"></script>
+<script type="text/javascript" src="js/project/projectWbs.js"></script>
+<script type="text/javascript" src="js/project/stringBuffer.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/project/sweetalert.css?ver=1.2">
+<link rel="stylesheet" type="text/css" href="css/project/bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="css/project/bootstrap.min.css">
+
+</head>
+<body>
+	<div>
+	<table>
+		<thead>
+		<tr>
+			<th>프로젝트명</th><td th:text="${prjInfo.prjName}"></td>
+		</tr>
+		<tr>
+			<th>PM</th><td th:text="${prjInfo.memId}"></td>
+		</tr>
+		<tr>
+			<th>계약금</th><td th:text="${prjInfo.prjDeposit}"></td>
+			<th>사업비</th><td th:text="${prjInfo.prjWorkingExpenses}"></td>
+		</tr>
+		<tr>
+			<th>시작일</th><td th:text="${prjInfo.prjStart} ? 
+			${#dates.format(prjInfo.prjStart, 'yyyy-MM-dd')} : ${prjInfo.prjStart}"></td>
+			<th>종료일</th><td th:text="${prjInfo.prjEnd} ?
+			${#dates.format(prjInfo.prjEnd, 'yyyy-MM-dd')} : ${prjInfo.prjEnd}"></td>
+		</tr>
+		<tr>
+			<th>마더업체</th><td th:text="${prjInfo.prjMothercompany}"></td>
+		</tr>
+		<tr><th><h4>프로젝트 참여인원</h4></th></tr>
+		<tr th:each="memInfos : ${memInfos}">
+			<td class="prjMems" th:text="${memInfos.memName}"></td>
+			<td th:text="${memInfos.deptName}"></td>
+			<td th:text="${memInfos.ranks}"></td>
+		</tr>
+		</thead>
+	</table>
+	<form action="/updateProjectView">
+			<input type="hidden" name="prjCode" id="prjCode" value="${prjInfo.prjCode}" th:value="${prjInfo.prjCode}" />
+			<input type="hidden" name="prjName" value="${prjInfo.prjName}" />
+			<input type="hidden" name="prjDeposit" value="${prjInfo.prjDeposit}" />
+			<input type="hidden" name="prjWorkingExpenses" value="${prjInfo.prjWorkingExpenses}" />
+			<input type="hidden" name="prjStart" value="${prjInfo.prjStart}" />
+			<input type="hidden" name="prjEnd" value="${prjInfo.prjEnd}" />
+			<input type="hidden" name="prjMothercompany" value="${prjInfo.prjMothercompany}" />
+			<input type="hidden" name="prjCompletion" value="${prjInfo.prjCompletion}" />
+			<input type="hidden" name="memId" value="${prjInfo.memId}" />
+			<input type="submit" value="프로젝트 정보 수정" />
+	</form>
+	
+	<form action="selectProjectAttendMemberList" id="selectProjectAttendMembers">
+		<input type="hidden" name="prjCode" id="selectProjectAttendMembersBtn" th:value="${prjInfo.prjCode}" />
+			<input type="submit" value="참여인원 추가" />
+	</form>
+	</div>
+	<br /><br />
+	<form action="#" method="post" id='insertProjectWbs'>
+<!-- 		<input type="hidden" id="prjCode" name="prjCode" value="${prjCode}" /> -->
+		<table border="1" class="table table-bordered">
+			<thead id='thead'>
+				<tr>
+					<td rowspan="5"><div style="width: 45px;"></div></td>
+					<td rowspan="5"></td>
+					<td rowspan="5">
+						<div style="width: 450px;">
+							<h1>업무구분</h1>
+						</div>
+					</td>
+					<td rowspan="5"><div style="width: 80px;"></div></td>
+					<td rowspan="5"><div style="width: 80px;"></div></td>
+					<td rowspan="5"><div style="width: 80px;"></div></td>
+					<td rowspan="5"><div style="width: 80px;"></div></td>
+					<td rowspan="5"><div style="width: 80px;"></div></td>
+					<td><div style="width: 100px;">월</div></td>
+				</tr>
+				<tr>
+					<td>주차</td>
+				</tr>
+				<tr>
+					<td>일</td>
+				</tr>
+				<tr>
+					<td>총진척률</td>
+				</tr>
+				<tr>
+					<td>일간진척률</td>
+				</tr>
+				<tr>
+					<td><input type='checkBox' onclick=' '/>전체</td>
+					<td>
+						<button type='button' class='btn btn-sm btn-info' onclick='createTopList()'>생성</button>
+					</td>
+					<td align="center">WBS 작업 목록</td>
+					<td>계획 작업시작일</td>
+					<td>계획 작업종료일</td>
+					<td>실제 작업종료일</td>
+					<td>담당자</td>
+					<td>산출물</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody id='tbody'>
+			</tbody>
+		</table>
+		<input class="btn btn-sm btn-warning btn-center" type="button" value="저장" onclick="">
+		<input class="btn btn-sm btn-warning btn-center" type="button" value="프로젝트 목록" onclick="location.href='/project'">
+	</form>
+	
+</body>
+</html>

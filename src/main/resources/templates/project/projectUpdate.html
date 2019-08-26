@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+	<form action="/updateProject">
+	<table>
+		<thead>
+		<input type="hidden" name="prjCode" value="${board.prjCode}" th:value="${board.prjCode}"/>
+		<tr>
+			<th>프로젝트명</th><td><input type="text" name="prjName" th:value="${board.prjName}"></td>
+		</tr>
+		<tr>
+			<th>PM</th><td><input type="text" name="memId" th:value="${board.memId}"></td>
+		</tr>
+		<tr>
+			<th>계약금</th><td><input type="number" name="prjDeposit" th:value="${board.prjDeposit}"></td>
+			<th>사업비</th><td><input type="number" name="prjWorkingExpenses" th:value="${board.prjWorkingExpenses}"></td>
+		</tr>
+		<tr>
+			<th>시작일</th><td><input type="date" name="prjStart" th:value="${board.prjStart}"></td>
+			<th>종료일</th><td><input type="date" name="prjEnd" th:value="${board.prjEnd}"></td>
+		</tr>
+		<tr>
+			<th>마더업체</th><td><input type="text" name="prjMothercompany" th:value="${board.prjMothercompany}"></td>
+		</tr>
+		</thead>
+	</table>
+	<input type="submit" value="프로젝트 정보 수정 완료">
+	</form>
+	</div>
+</body>
+</html>
