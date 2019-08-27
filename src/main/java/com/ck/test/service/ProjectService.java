@@ -21,7 +21,7 @@ public interface ProjectService {
 	public ProjectInfoDto selectProject(int prjCode);
 	
 	/*프로젝트 정보 수정 */
-	public ProjectInfoDto updateProject(int prjCode);
+	public void updateProject(ProjectInfoDto prjDto);
 	
 	/*프로젝트 정보 생성 */
 	public void insertProject(ProjectInfoDto prjInfoDto);

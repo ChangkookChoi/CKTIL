@@ -21,8 +21,10 @@
 			<th>사업비</th><td><input type="number" name="prjWorkingExpenses" th:value="${board.prjWorkingExpenses}"></td>
 		</tr>
 		<tr>
-			<th>시작일</th><td><input type="date" name="prjStart" th:value="${board.prjStart}"></td>
-			<th>종료일</th><td><input type="date" name="prjEnd" th:value="${board.prjEnd}"></td>
+			<th>시작일</th><td><input type="date" name="prjStart" th:value="${board.prjStart} ? 
+			${#dates.format(board.prjStart, 'yyyy-MM-dd')} : ${board.prjStart}"></td>
+			<th>종료일</th><td><input type="date" name="prjEnd" th:value="${board.prjEnd} ?
+			${#dates.format(board.prjEnd, 'yyyy-MM-dd')} : ${board.prjEnd}"></td>
 		</tr>
 		<tr>
 			<th>마더업체</th><td><input type="text" name="prjMothercompany" th:value="${board.prjMothercompany}"></td>

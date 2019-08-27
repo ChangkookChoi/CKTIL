@@ -1,5 +1,5 @@
-	var baseData = {} // ProjectInfoDto
-	var subData = {} // List<ProjectWbsDto>
+var baseData = {} // ProjectInfoDto
+var subData = {} // List<ProjectWbsDto>
 
 
 /*최초 ProjectWbs 화면 그리기 */
@@ -45,7 +45,7 @@ $(document).ready(function(){
 					});
 				}else{
 					baseData.chk = false;
-					swal("오류", "WBS를 불러오던 중 오류가 발생했습니다.");
+					swal("오류", "WBS가 생성되지 않았거나, WBS를 불러오던 중 오류가 발생했습니다.");
 				}
 			}
 	});
@@ -74,12 +74,12 @@ function screenWriteTbody(num, group, step, depth, workName, manager, output, pl
 	tag.append('</button>');
 	tag.append('<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">');
 	tag.append('<li><a onclick="createList('+num+')">목록추가</a></li>');
-	tag.append('<li><a onclick="">하위추가</a></li>');
+	tag.append('<li><a onclick="createChildList('+num+')">하위추가</a></li>');
 	tag.append('<li><a onclick="createParentList('+num+')">상위추가</a></li>');
 	tag.append('</ul></div>');
 	tag.append("<input type='hidden' name='inPrjGroup' value='"+group+"'>");
 	tag.append("<input type='hidden' name='inPrjStep' value='"+step+"'>");
-	tag.append("<input type='hidden' name='inPrjdepth' value='"+depth+"'>");
+	tag.append("<input type='hidden' name='inPrjDepth' value='"+depth+"'>");
 	tag.append("<input type='hidden' name='workCompletion' value='"+workCompletion+"'>");
 	tag.append("</td>");
 	tag.append("<td style='overflow: hidden;'><input style='margin-left: "+(25*depth)+"px;' type='text' name='inPrjWorkName' value='"+workName+"'></td>");
@@ -181,6 +181,7 @@ function createParentList(num){
 	subData.cnt = $('#tbody tr').length;
 }
 
+// 목록 추가
 function createList(num) {
 	var myPrjGroup = $('#tbody tr:eq('+num+')').find('input[name=inPrjGroup]').val();
 	var myPrjStep = $('#tbody tr:eq('+num+')').find('input[name=inPrjStep]').val();
@@ -219,6 +220,102 @@ function createList(num) {
 		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', 0, ''));
 	}else {
 		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, myPrjDepth, '', '', '', '', '', '', 0, ''));
+	}
+	subData.cnt = $('#tbody tr').length;
+}
+
+//하위추가
+function createChildList(num) {
+	var myPrjGroup = $('#tbody tr:eq('+num+')').find('input[name=inPrjGroup]').val();
+	var myPrjStep = $('#tbody tr:eq('+num+')').find('input[name=inPrjStep]').val();
+	var myPrjDepth = $('#tbody tr:eq('+num+')').find('input[name=inPrjDepth]').val();
+	$('#tbody tr:gt('+num+')').attr('id',function(){
+		return Number($(this).attr('id'))+1;
+	}).find('input[name=chkVal]').attr('value', function(){
+		return Number($(this).val()) + 1;
+	}).end().find('input[name=inPrjStep]').attr('value', function(){
+		if($(this).parent('td').find('input[name=inPrjGroup]').val() == myPrjGroup) {
+			return Number($(this).val()) + 1;
+		}else {
+			return $(this).val();
+		}
+	}).end().find('button').text(function(){
+		return numFormat(Number($(this).text()) + 1);
+	}).end().find('a').attr('onclick', function(){
+		if($(this).attr('onclick').indexOf('createChildList') != -1) {
+			return 'createChildList('+$(this).parents("tr").attr("id")+')';
+		}else if($(this).attr('onclick').indexOf('createParentList') != -1) {
+			return 'createParentList('+$(this).parents("tr").attr("id")+')';
+		}else {
+			return 'createList('+$(this).parents("tr").attr("id")+')';
+		}
+	});
+	$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, Number(myPrjDepth)+1, '', '', '', '', '', '', 0, ''));
+
+	subData.cnt = $('#tbody tr').length;
+}
+
+//전체체크
+function checkAll(bool) {
+	var chkVal = document.getElementsByName("chkVal");
+	for (var i = 0; i < chkVal.length; i++) {
+		chkVal[i].checked = bool;
+	}
+}
+// 삭제처리
+function checkListRemove() {
+	var isc = 0;
+	while(true) {
+		var chkVal = document.getElementsByName("chkVal");
+		for (var i=0,cnt=0; i<chkVal.length; i++) {
+			if(chkVal[i].checked) {
+				cnt++;
+			}
+		}
+		if(cnt==0) {
+			break;
+		}
+		isc++;
+		for (var i=0; i<chkVal.length; i++) {
+			if(chkVal[i].checked) {
+				var myPrjGroup = $('#tbody tr:eq('+chkVal[i].value+')').find('input[name=inPrjGroup]').val();
+				var myPrjStep = $('#tbody tr:eq('+chkVal[i].value+')').find('input[name=inPrjStep]').val();
+				$('#tbody tr:gt('+chkVal[i].value+')').attr('id',function(){
+					return Number($(this).attr('id')) - 1;
+				}).find('input[name=chkVal]').attr('value', function(){
+					return Number($(this).val()) - 1;
+				}).end().find('input[name=inPrjGroup]').attr('value',function(){
+					if(myPrjGroup == $(this).val() && myPrjStep != '0') {
+						$(this).parent('td').find('input[name=inPrjStep]').attr('value', function(){
+							return Number($(this).parent('td').find('input[name=inPrjStep]').val()) - 1;
+						});
+						return $(this).val();
+					}else if(myPrjStep != '0') {
+						return $(this).val();
+					}else {
+						return Number($(this).val()) - 1;
+					}
+				}).end().find('button').text(function(){
+					return numFormat(Number($(this).text()) - 1);
+				}).end().find('a').attr('onclick', function(){
+					if($(this).attr('onclick').indexOf('createChildList') != -1) {
+						return 'createChildList('+$(this).parents("tr").attr("id")+')';
+					}else if($(this).attr('onclick').indexOf('createParentList') != -1) {
+						return 'createParentList('+$(this).parents("tr").attr("id")+')';
+					}else {
+						return 'createList('+$(this).parents("tr").attr("id")+')';
+					}
+				});
+				$('#tbody tr:eq('+chkVal[i].value+')').remove();
+				break;
+			}
+		}
+	}
+	if(isc==0) {
+		swal("삭제", '선택해주세요');
+	}
+	if($('#tbody tr').length == 0) {
+		baseData.chk = false;
 	}
 	subData.cnt = $('#tbody tr').length;
 }

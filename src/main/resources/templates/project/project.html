@@ -18,10 +18,10 @@
 	<td><a th:href="'/projectEnd?prjCompletion=1'" th:text="'완료된 프로젝트'"></a></td>
 	</div>
 	<div>
-	<table>
+	<table class="table table-hover">
 		<thead>
 		<tr>
-			<th>프로젝트 코드</th>
+<!-- 			<th>프로젝트 코드</th> -->
 			<th>프로젝트명</th>
 			<th>PM</th>
 			<th>시작일</th>
@@ -31,19 +31,18 @@
 		</thead>
 		<tbody>
 		<tr th:each="Infos : ${prjInfos}">
-			<td th:text="${Infos.prjCode}" id="prjCode" th:value="${Infos.prjCode}"></td>
+			<input type="hidden" name="prjCode" id="prjCode" th:value="${Infos.prjCode}">
+<!-- 			<td th:text="${Infos.prjCode}" id="prjCode" th:value="${Infos.prjCode}"></td> -->
 			<td><a th:href="'/projectDetail?prjCode='+${Infos.prjCode}" th:text="${Infos.prjName}"></a></td>
 			<td th:text="${Infos.memId}"></td>
-			<td th:text="${Infos.prjStart} ?
-			${#dates.format(Infos.prjStart, 'yyyy-MM-dd')} : ${Infos.prjStart}"></td>
-			<td th:text="${Infos.prjEnd} ?
-			${#dates.format(Infos.prjEnd, 'yyyy-MM-dd')} : ${Infos.prjEnd}"></td>
+			<td th:text="${Infos.prjStart}"></td>
+			<td th:text="${Infos.prjEnd}"></td>
 			<td th:text="${Infos.prjMothercompany}"></td>
 		</tr>
 		</tbody>
 	</table>
 	<input class='btn btn-sm btn-warning btn-center' type='button'
-			value='생성' onclick='insertProjectForm()'>
+			value='프로젝트 생성' onclick='insertProjectForm()'>
 	</div>
 	
 	<!-- 프로젝트 생성 modal -->
@@ -85,6 +84,10 @@
 						<div class='form-group'>
 							<label>PM</label>
 							<input class='form-control' type="text" name='memId' id='memId' />
+						</div>
+						<div class='form-group'>
+							<label>PM</label>
+							<input class='form-control' type="text" name='memName' id='memName' />
 						</div>
 						
 						<div class='modal-footer'>

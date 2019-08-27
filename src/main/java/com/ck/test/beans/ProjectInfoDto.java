@@ -1,18 +1,19 @@
 package com.ck.test.beans;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Date;
-
-import lombok.Data;
-
-@Data
+@Getter
+@Setter
+@ToString
 public class ProjectInfoDto {
 	private int prjCode;
 	private String prjName;
 	private int prjDeposit;
 	private int prjWorkingExpenses;
-	private Date prjStart;
-	private Date prjEnd;
+	private String prjStart;
+	private String prjEnd;
 	private String prjMothercompany;
 	private int prjCompletion;
 	private String memId;

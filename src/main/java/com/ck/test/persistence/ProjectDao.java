@@ -33,11 +33,11 @@ public interface ProjectDao {
 	
 	/*프로젝트 정보 수정 */
 	@Update("UPDATE PROJECT_INFO SET PRJ_NAME=#{prjName}, PRJ_DEPOSIT=#{prjDeposit}, PRJ_WORKING_EXPENSES=#{prjWorkingExpenses}, PRJ_START=#{prjStart}, PRJ_END=#{prjEnd}, PRJ_MOTHERCOMPANY=#{prjMothercompany} WHERE PRJ_CODE=#{prjCode}")
-	public ProjectInfoDto updateProject(int prj_code);
+	public void updateProject(ProjectInfoDto prjDto);
 	
 	/*프로젝트 정보 생성 */
-	@Insert("INSERT INTO PROJECT_INFO (PRJ_NAME, PRJ_DEPOSIT, PRJ_WORKING_EXPENSES, PRJ_START, PRJ_END, PRJ_MOTHERCOMPANY, MEM_ID) VALUES (#{prjName}, #{prjDeposit}, #{prjWorkingExpenses}, '#{prjStart}', '#{prjEnd}', #{prjMothercompany}, #{mem_id})")
-	public void insertProject(ProjectInfoDto prjVO);
+	@Insert("INSERT INTO PROJECT_INFO (PRJ_NAME, PRJ_DEPOSIT, PRJ_WORKING_EXPENSES, PRJ_START, PRJ_END, PRJ_MOTHERCOMPANY, MEM_ID, MEM_NAME) VALUES (#{prjName}, #{prjDeposit}, #{prjWorkingExpenses}, #{prjStart}, #{prjEnd}, #{prjMothercompany}, #{memId}, #{memName})")
+	public void insertProject(ProjectInfoDto prjDto);
 	
 	/*프로젝트 참여인원 기본 리스트 출력*/
 	@Select("SELECT * FROM MEMBER_OFFICEINFO")

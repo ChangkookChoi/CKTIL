@@ -42,9 +42,9 @@ public class ProejctServiceImpl implements ProjectService {
 	
 	/*프로젝트 정보 수정*/
 	@Override
-	public ProjectInfoDto updateProject(int prjCode) {
+	public void updateProject(ProjectInfoDto prjDto) {
 
-		return dao.updateProject(prjCode);
+		dao.updateProject(prjDto);
 	}
 
 	/*프로젝트 정보 생성 */

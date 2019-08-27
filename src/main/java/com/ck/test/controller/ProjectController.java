@@ -1,5 +1,7 @@
 package com.ck.test.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,7 @@ public class ProjectController {
 		ProjectInfoDto prjInfo = projectService.selectProject(prjCode);
 		List<MemberOfficeInfo> memInfos = projectService.selectProjectAttendMemberList(prjCode);
 		List<ProjectWbsDto> prjWbs = projectService.selectProjectWbsList(prjCode);
+		System.out.println("prjInfo내용 : "+prjInfo);
 		model.addAttribute("prjInfo", prjInfo);
 		model.addAttribute("memInfos", memInfos);
 		model.addAttribute("prjWbs", prjWbs);
@@ -70,23 +73,22 @@ public class ProjectController {
 	
 	/*프로젝트 수정 */
 	@RequestMapping("/updateProject")
-	public String updateProject(Model model, String prjCode) {
+	public String updateProject(Model model, ProjectInfoDto prjDto) {
+//		int code = Integer.parseInt(prjCode.trim());
 		
-		int code = Integer.parseInt(prjCode.trim());
-		
-		ProjectInfoDto prjVO = projectService.updateProject(code);
-		
-		model.addAttribute("board", prjVO);
-		return "project/project";
+		System.out.println("code 값 : " + prjDto);
+		System.out.println(prjDto.getPrjStart()+"이건 start  "+prjDto.getPrjEnd()+"이건 end");
+		projectService.updateProject(prjDto);
+		return "redirect:/project";
 	}
 	
 	/*프로젝트 생성 */
 	@RequestMapping(value="/insertProject", method=RequestMethod.POST)
-	public String insertProject(ProjectInfoDto prjVO) {
+	public String insertProject(ProjectInfoDto prjDto) {
+		System.out.println("prjDto : " + prjDto);
+		projectService.insertProject(prjDto);
 		
-		projectService.insertProject(prjVO);
-		
-		return "redirect:/project/project";
+		return "redirect:/project";
 	}
 	
 	/*프로젝트 참여인원 선택 페이지로 이동 */
@@ -114,9 +116,10 @@ public class ProjectController {
 	@RequestMapping(value="selectProjectWbsListAjax", method=RequestMethod.POST)
 	@ResponseBody
 	public List<ProjectWbsDto> selectProjectWbsListAjax(int prjCode){
-			
-		System.out.println("11111"+prjCode);
-		System.out.println(projectService.selectProjectWbsList(prjCode));
+		
+		System.out.println("selectProjectWbsListAjax 실행 및 결과 값" + projectService.selectProjectWbsList(prjCode));
+		System.out.println("매개변수 prjCode : " + prjCode);
+		
 		return projectService.selectProjectWbsList(prjCode);
 	}
 	

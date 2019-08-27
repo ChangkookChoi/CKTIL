@@ -7,16 +7,39 @@
 <script type="text/javascript" src="js/project/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/project/sweetalert.min.js?ver=1"></script>
 <script type="text/javascript" src="js/project/projectWbs.js"></script>
+<script type="text/javascript" src="js/project/projectList.js"></script>
 <script type="text/javascript" src="js/project/stringBuffer.js"></script>
 
 <link rel="stylesheet" type="text/css" href="css/project/sweetalert.css?ver=1.2">
 <link rel="stylesheet" type="text/css" href="css/project/bootstrap-theme.min.css">
 <link rel="stylesheet" type="text/css" href="css/project/bootstrap.min.css">
 
+<style>
+input[type='text']{
+	border: 0px;
+	width: 100%;
+}
+input[type='date']{
+	border: 0px;
+	width: 100%;
+}
+ 
+#prjAttend {
+	font-weight: bold;
+	text-align: center;
+}
+</style>
+<script>
+$(document).ready(function(){
+	if($('.prjMems').length > 0){
+		$('#projectAttendMembersBtn').hide();
+	}
+})
+</script>
 </head>
 <body>
 	<div>
-	<table>
+	<table class="table table-striped">
 		<thead>
 		<tr>
 			<th>프로젝트명</th><td th:text="${prjInfo.prjName}"></td>
@@ -29,41 +52,25 @@
 			<th>사업비</th><td th:text="${prjInfo.prjWorkingExpenses}"></td>
 		</tr>
 		<tr>
-			<th>시작일</th><td th:text="${prjInfo.prjStart} ? 
-			${#dates.format(prjInfo.prjStart, 'yyyy-MM-dd')} : ${prjInfo.prjStart}"></td>
-			<th>종료일</th><td th:text="${prjInfo.prjEnd} ?
-			${#dates.format(prjInfo.prjEnd, 'yyyy-MM-dd')} : ${prjInfo.prjEnd}"></td>
+			<th>시작일</th><td th:text="${prjInfo.prjStart}"></td>
+			<th>종료일</th><td th:text="${prjInfo.prjEnd}"></td>
 		</tr>
 		<tr>
 			<th>마더업체</th><td th:text="${prjInfo.prjMothercompany}"></td>
-		</tr>
-		<tr><th><h4>프로젝트 참여인원</h4></th></tr>
-		<tr th:each="memInfos : ${memInfos}">
-			<td class="prjMems" th:text="${memInfos.memName}"></td>
-			<td th:text="${memInfos.deptName}"></td>
-			<td th:text="${memInfos.ranks}"></td>
+			<th>참여인원</th><td><input class='btn btn-sm btn-warning btn-center' type="button"
+					value="참여인원 리스트" onclick="projectAttendMemberModal()"></td>
 		</tr>
 		</thead>
 	</table>
-	<form action="/updateProjectView">
-			<input type="hidden" name="prjCode" id="prjCode" value="${prjInfo.prjCode}" th:value="${prjInfo.prjCode}" />
-			<input type="hidden" name="prjName" value="${prjInfo.prjName}" />
-			<input type="hidden" name="prjDeposit" value="${prjInfo.prjDeposit}" />
-			<input type="hidden" name="prjWorkingExpenses" value="${prjInfo.prjWorkingExpenses}" />
-			<input type="hidden" name="prjStart" value="${prjInfo.prjStart}" />
-			<input type="hidden" name="prjEnd" value="${prjInfo.prjEnd}" />
-			<input type="hidden" name="prjMothercompany" value="${prjInfo.prjMothercompany}" />
-			<input type="hidden" name="prjCompletion" value="${prjInfo.prjCompletion}" />
-			<input type="hidden" name="memId" value="${prjInfo.memId}" />
-			<input type="submit" value="프로젝트 정보 수정" />
-	</form>
 	
-	<form action="selectProjectAttendMemberList" id="selectProjectAttendMembers">
+	<td><input class='btn btn-sm btn-warning btn-center' type="button"
+					value="프로젝트 정보 수정" onclick="projectUpdateModal()"></td>
+	<form action="selectProjectAttendMemberList" id="selectProjectAttendMembers" style="display: inline-block;">
 		<input type="hidden" name="prjCode" id="selectProjectAttendMembersBtn" th:value="${prjInfo.prjCode}" />
-			<input type="submit" value="참여인원 추가" />
+			<input type="submit" value="참여인원 추가" id="projectAttendMembersBtn" class="btn btn-sm btn-warning btn-center"/>
 	</form>
 	</div>
-	<br /><br />
+	<br /><br /><br />
 	<form action="#" method="post" id='insertProjectWbs'>
 <!-- 		<input type="hidden" id="prjCode" name="prjCode" value="${prjCode}" /> -->
 		<table border="1" class="table table-bordered">
@@ -96,7 +103,7 @@
 					<td>일간진척률</td>
 				</tr>
 				<tr>
-					<td><input type='checkBox' onclick=' '/>전체</td>
+					<td><input type='checkbox' onclick='checkAll(this.checked)'/>전체</td>
 					<td>
 						<button type='button' class='btn btn-sm btn-info' onclick='createTopList()'>생성</button>
 					</td>
@@ -114,7 +121,87 @@
 		</table>
 		<input class="btn btn-sm btn-warning btn-center" type="button" value="저장" onclick="">
 		<input class="btn btn-sm btn-warning btn-center" type="button" value="프로젝트 목록" onclick="location.href='/project'">
+		 <input class='btn btn-sm btn-warning btn-center' type='button' value='삭제' onclick='checkListRemove()'>
 	</form>
 	
+	<!-- 프로젝트 정보 수정 모달 -->
+	<div class="modal fade" id="projectUpdateModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 id="prjAttend">프로젝트 정보 수정</h4>
+				</div>
+				<div class="modal-body">
+					<form action="/updateProject" method='post'
+						id='frmUpdateProjcet'>
+						<div class='form-group'>
+						<input type="hidden" name="prjCode" id="prjCode" th:value="${prjInfo.prjCode}" />
+							<label>프로젝트명</label>
+							<input class='form-control' type="text" name='prjName' id='prjName' th:value="${prjInfo.prjName}"/>
+						</div>
+						<div class='form-group'>
+							<label>계약금</label>
+							<input class='form-control' type="number" name='prjDeposit' id='prjDeposit' th:value="${prjInfo.prjDeposit}"/>
+						</div>
+						<div class='form-group'>
+							<label>사업비</label>
+							<input class='form-control' type="number" name='prjWorkingExpenses' id='prjWorkingExpenses' th:value="${prjInfo.prjWorkingExpenses}"/>
+						</div>
+						<div class='form-group'>
+							<label>시작일</label>
+							<input class='form-control' type="date" name='prjStart' id='prjStart' th:value="${prjInfo.prjStart}" />
+						</div>
+						<div class='form-group'>
+							<label>종료일</label>
+							<input class='form-control' type="date" name='prjEnd' id='prjEnd' th:value="${prjInfo.prjEnd}"/>
+						</div>
+						<div class='form-group'>
+							<label>마더업체</label>
+							<input class='form-control' type="text" name='prjMothercompany' id='prjMothercompany' th:value="${prjInfo.prjMothercompany}"/>
+						</div>
+						<div class='form-group'>
+							<label>PM</label>
+							<input class='form-control' type="text" name='memId' id='memId' th:value="${prjInfo.memId}"/>
+						</div>
+						<div class='modal-footer'>
+							<input type="button" class='btn btn-sm btn-warning' value="확인" onclick="updateProject()" />
+							<input type="reset" class='btn btn-sm btn-warning' value="초기화" />
+							<input type='button' class='btn btn-sm btn-warning' data-dismiss='modal' value="취소" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 프로젝트 참여인원 확인 모달 -->
+	<div class="modal fade" id="projectAttendMemberModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 id="prjAttend">프로젝트 참여인원</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-hover">
+					<tr>
+						<th>이름</th>
+						<th>부서</th>
+						<th>직급</th>
+					</tr>
+					<tr th:each="memInfos : ${memInfos}">
+						<div class="form-group">
+						<td class="prjMems" th:text="${memInfos.memName}"></td>
+						<td th:text="${memInfos.deptName}"></td>
+						<td th:text="${memInfos.ranks}"></td>
+						</div>
+					</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
