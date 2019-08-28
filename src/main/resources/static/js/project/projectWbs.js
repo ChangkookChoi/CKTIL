@@ -4,8 +4,20 @@ var subData = {} // List<ProjectWbsDto>
 
 /*최초 ProjectWbs 화면 그리기 */
 $(document).ready(function(){
-
-
+	
+	// 기본데이터 저장 객체
+	baseData = {
+			start : $('#prjStart').val().split("-"),
+			end : $('#prjEnd').val().split("-"),
+			schdule : function() { //term 구하기. 날짜와 날짜로 일수 차이를 구하는 공식. [1]에서 -1 해주는 이유는 date객체의 월은 실제 월보다 1이 작기 때문
+				var start = new Date(this.start[0], this.start[1]-1, this.start[2]);
+				var end = new Date(this.end[0], this.end[1]-1, this.end[2]);
+				return ((end.getTime() - start.getTime()) / (1000*60*60*24)) + 1;
+			}
+	}
+	
+	screenWriteThead();
+	
 	var prjCodes = $('#prjCode').val();
 
 	$.ajax({
@@ -318,4 +330,212 @@ function checkListRemove() {
 		baseData.chk = false;
 	}
 	subData.cnt = $('#tbody tr').length;
+}
+
+//배열로 반환한다.
+function byNameArray(data) {
+	var dataArray = new Array();
+	for(var i=0; i<data.length; i++) {
+		dataArray[i] = data[i].value;
+	}
+	return dataArray;
+}
+
+// 프로젝트 WBS 저장
+function insertProjectWbsList(){
+	
+	var prjWorkNames = byNameArray(document.getElementsByName("inPrjWorkName"));
+	var chk = true;
+	for(var i=0; i<prjWorkNames.length; i++){
+		if(prjWorkNames[i].trim() == '' || prjWorkNames[i].trim().length == 0){
+			chk = false;
+			break;
+		}
+	}
+	if(chk){
+		insertProjectWbsListAjax();
+	}else{
+		swal('저장 오류', '업무구분 작업명을 모두 입력해주세요.')
+	}
+}
+
+var insertProjectWbsListAjax = function(){
+	
+	$.ajax({
+		url: 'insertProjectWbsListAjax',
+		type: 'post',
+		async: false,
+		data: {
+			
+		},
+		success: function(msg){
+			if(msg){
+				swal('저장', '저장에 성공했습니다.');
+			}else{
+				swal('저장', '저장에 실패했습니다.');
+			}
+		}
+	})
+	
+}
+
+
+//매개변수로 받은 월부터 마지막 12까지
+function LastMonths(year, month) {
+	var tag = new StringBuffer();
+	for(var i=Number(month); i<=12; i++) {
+		tag.append(tagMonthOne(calendar.makeOne(year, i)));
+	}
+	return tag.toString();
+}
+// 매개변수로 받은 월이하 1이상
+function startMonths(year, month) {
+	var tag = new StringBuffer();
+	for(var i=1; i<=Number(month); i++){
+		tag.append(tagMonthOne(calendar.makeOne(year, i)));
+	}
+	return tag.toString();
+}
+
+//달력의 해당 날짜의 요일을 구하기위해 현재위치 반환
+function monthDayIndex(month, day) {
+	for(var i=0; i<month.length; i++) {
+		if(month[i]==day) {
+			return i;
+		}
+	}
+}
+// 시작월부터 종료월의 colspan값을 구해서 td 반환
+function yearMonth(year, startMonth, lastMonth) {
+	var tag = new StringBuffer();
+	if(calendar.iscLeafCheck(year)) {
+		for(var i=Number(startMonth)-1; i<Number(lastMonth); i++) {
+			tag.append(tdTagFormatMonth(calendar.LEAF[i], year, i+1));
+		}
+	}else {
+		for(var i=Number(startMonth)-1; i<Number(lastMonth); i++) {
+			tag.append(tdTagFormatMonth(calendar.PLAIN[i], year, i+1));
+		}
+	}
+	return tag.toString();
+}
+
+//td 월 한칸 포맷
+function tdTagFormatMonth(colspan, year, month) {
+	return "<td class='removeThead' colspan='"+colspan+"'>"+year+"-"+numFormat(month)+"</td>";
+}
+// td 주차 한칸 포맷
+function tdTagFormatWeek(colspan, week) {
+	return "<td class='removeThead' colspan='"+colspan+"'>"+week+"주차</td>";
+}
+// td 날짜 한칸 포맷
+function tdTagFormatDay(day) {
+	return "<td class='removeThead'><div style='width: 60px;'>"+numFormat(day)+"</div></td>";
+}
+
+//테이블 thead 화면에 그리는 함수
+function screenWriteThead() {
+	// 월처리
+	var tag = new StringBuffer();
+	if(baseData.start[0] != baseData.end[0]) {
+		if(calendar.iscLeafCheck(baseData.start[0])) {
+			var startMonthCnt = calendar.LEAF[baseData.start[1]-1] - baseData.start[2] + 1;
+			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
+		}else {
+			var startMonthCnt = calendar.PLAIN[baseData.start[1]-1] - baseData.start[2] + 1;
+			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
+		}
+		tag.append(yearMonth(baseData.start[0], Number(baseData.start[1])+1, 12));
+		if(Number(baseData.end[0])-Number(baseData.start[0]) > 1) {
+			for(var i=Number(baseData.start[0])+1; i<Number(baseData.end[0]); i++) {
+				tag.append(yearMonth(i, 1, 12));
+			}
+		}
+		tag.append(yearMonth(baseData.end[0], 1, Number(baseData.end[1])-1));
+		if(calendar.iscLeafCheck(baseData.end[0])) {
+			tag.append(tdTagFormatMonth(baseData.end[2], baseData.end[0], baseData.end[1]));
+		}else {
+			tag.append(tdTagFormatMonth(baseData.end[2], baseData.end[0], baseData.end[1]));
+		}
+	}else if(baseData.start[1] == baseData.end[1]) {
+		tag.append(tdTagFormatMonth(baseData.schdule(), baseData.start[0], baseData.start[1]));
+	}else {
+		if(calendar.iscLeafCheck(baseData.start[0])) {
+			var startMonthCnt = calendar.LEAF[baseData.start[1]-1] - baseData.start[2] + 1;
+			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
+			tag.append(yearMonth(baseData.start[0], Number(baseData.start[1])+1, Number(baseData.end[1])-1));
+			tag.append(tdTagFormatMonth(baseData.end[2], baseData.end[0], baseData.end[1]));
+		}else {
+			var startMonthCnt = calendar.PLAIN[baseData.start[1]-1] - baseData.start[2] + 1;
+			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
+			tag.append(yearMonth(baseData.start[0], Number(baseData.start[1])+1, Number(baseData.end[1])-1));
+			tag.append(tdTagFormatMonth(baseData.end[2], baseData.end[0], baseData.end[1]));
+		}
+	}
+	$("#thead tr:eq(0)").append(tag.toString());
+	// 주차처리
+	tag = new StringBuffer();
+	var startDayIndex = monthDayIndex(calendar.make(baseData.start[0], baseData.start[1]), baseData.start[2]);
+	var lastDayIndex = monthDayIndex(calendar.make(baseData.end[0], baseData.end[1]), baseData.end[2]);
+	var startDayOfWeek = 7 - startDayIndex % 7;
+	var lastDayOfWeek = lastDayIndex % 7;
+	var remain = (baseData.schdule() - startDayOfWeek) / 7;
+	tag.append(tdTagFormatWeek(startDayOfWeek, 1));
+	for(var i=2; i<remain+2; i++) {
+		tag.append(tdTagFormatWeek(7, i));
+	}
+	$("#thead tr:eq(1)").append(tag.toString());
+	// 날짜처리
+	var tag = new StringBuffer();
+	if(baseData.start[0] != baseData.end[0]) {
+		for(var i=Number(baseData.start[2]); i<=calendar.lastDay(baseData.start[0], baseData.start[1]); i++) {
+			tag.append(tdTagFormatDay(i));
+		}
+		if(Number(baseData.end[0])-Number(baseData.start[0]) > 1) {
+			tag.append(LastMonths(baseData.start[0], Number(baseData.start[1])+1));
+			for(var i=Number(baseData.start[0])+1; i<Number(baseData.end[0]); i++) {
+				tag.append(startMonths(i, 12));
+			}
+			tag.append(startMonths(baseData.end[0], Number(baseData.end[1])-1));
+		}else {
+			tag.append(LastMonths(baseData.start[0], Number(baseData.start[1])+1));
+			tag.append(startMonths(baseData.end[0], Number(baseData.end[1])-1));
+		}
+		for(var i=1; i<=Number(baseData.end[2]); i++) {
+			tag.append(tdTagFormatDay(i));
+		}
+	}else if(baseData.start[1] == baseData.end[1]) {
+		for(var i=Number(baseData.start[2]); i<=Number(baseData.end[2]); i++){
+			tag.append(tdTagFormatDay(i));
+		}
+	}else {
+		var lastDay = calendar.lastDay(baseData.start[0], baseData.start[1]);
+		for(var i=Number(baseData.start[2]); i<=lastDay; i++) {
+			tag.append(tdTagFormatDay(i));
+		}
+		for(var i=Number(baseData.start[1])+1; i<Number(baseData.end[1]); i++) {
+			tag.append(tagMonthOne(calendar.makeOne(baseData.start[0], i)));
+		}
+		for(var i=1; i<=Number(baseData.end[2]); i++){
+			tag.append(tdTagFormatDay(i));
+		}
+	}
+	$("#thead tr:eq(2)").append(tag.toString());
+	// 총, 일간 진척률 처리
+	tag = new StringBuffer();
+	for(var i=0; i<baseData.schdule(); i++) {
+		tag.append("<td class='removeThead progressDaySum'></td>");
+	}
+	$("#thead tr:eq(3)").append(tag.toString());
+	tag = new StringBuffer();
+	for(var i=0; i<baseData.schdule(); i++) {
+		tag.append("<td class='removeThead progressDay'></td>");
+	}
+	$("#thead tr:eq(4)").append(tag.toString());
+	tag = new StringBuffer();
+	for(var i=0; i<baseData.schdule(); i++) {
+		tag.append("<td class='removeThead'></td>");
+	}
+	$("#thead tr:eq(5)").append(tag.toString());
+	
 }

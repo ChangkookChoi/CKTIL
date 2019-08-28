@@ -81,5 +81,22 @@ public class ProejctServiceImpl implements ProjectService {
 		
 		return dao.selectProjectWbsList(prjCode);
 	}
-
+	
+	/*프로젝트 WBS 삭제 */
+	@Override
+	public boolean deleteProjectWbsList(int prjCode) {
+		return dao.deleteProjectWbsList(prjCode) >= 0 ? true : false;
+	}
+	
+	/*프로젝트 WBS 생성 */
+	@Override
+	public boolean insertProjectWbsList(List<ProjectWbsDto> prjWbsDto) {
+		
+		boolean chk = false;
+		
+		for(ProjectWbsDto prjWbsDtos : prjWbsDto) {
+		chk = dao.insertProjectWbsList(prjWbsDtos) == 1 ? true : false;
+	}
+		return chk;
+	}
 }

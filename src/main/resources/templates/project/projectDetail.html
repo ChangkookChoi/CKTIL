@@ -8,6 +8,7 @@
 <script type="text/javascript" src="js/project/sweetalert.min.js?ver=1"></script>
 <script type="text/javascript" src="js/project/projectWbs.js"></script>
 <script type="text/javascript" src="js/project/projectList.js"></script>
+<script type="text/javascript" src="js/project/calendar.js"></script>
 <script type="text/javascript" src="js/project/stringBuffer.js"></script>
 
 <link rel="stylesheet" type="text/css" href="css/project/sweetalert.css?ver=1.2">
@@ -53,7 +54,9 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<th>시작일</th><td th:text="${prjInfo.prjStart}"></td>
+			<input type="hidden" id="prjStart" th:value="${prjInfo.prjStart}" />
 			<th>종료일</th><td th:text="${prjInfo.prjEnd}"></td>
+			<input type="hidden" id="prjEnd" th:value="${prjInfo.prjEnd}" />
 		</tr>
 		<tr>
 			<th>마더업체</th><td th:text="${prjInfo.prjMothercompany}"></td>
@@ -71,7 +74,7 @@ $(document).ready(function(){
 	</form>
 	</div>
 	<br /><br /><br />
-	<form action="#" method="post" id='insertProjectWbs'>
+	<form action="#" method="post" id='insertProjectWbsList'>
 <!-- 		<input type="hidden" id="prjCode" name="prjCode" value="${prjCode}" /> -->
 		<table border="1" class="table table-bordered">
 			<thead id='thead'>
@@ -119,7 +122,7 @@ $(document).ready(function(){
 			<tbody id='tbody'>
 			</tbody>
 		</table>
-		<input class="btn btn-sm btn-warning btn-center" type="button" value="저장" onclick="">
+		<input class="btn btn-sm btn-warning btn-center" type="button" value="저장" onclick="insertProjectWbsList()">
 		<input class="btn btn-sm btn-warning btn-center" type="button" value="프로젝트 목록" onclick="location.href='/project'">
 		 <input class='btn btn-sm btn-warning btn-center' type='button' value='삭제' onclick='checkListRemove()'>
 	</form>

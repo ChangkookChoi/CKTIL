@@ -2,6 +2,7 @@ package com.ck.test.persistence;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -57,5 +58,35 @@ public interface ProjectDao {
 			+ "WHERE PRJ_CODE = #{prjCode} ORDER BY PRJ_GROUP, PRJ_STEP ASC")
 	public List<ProjectWbsDto> selectProjectWbsList(int prjCode);
 	
+	/*프로젝트 WBS 삭제 */
+	@Delete("DELETE FROM FROM PROJECT_WBS WHERE PRJ_CODE = #{prjCode}")
+	public int deleteProjectWbsList(int prjCode);
 	
+	/*프로젝트 WBS 생성 */
+	@Insert("INSERT INTO PROJECT_WBS <choose> "
+			+ "<when test=\"prjManager != null and prjOutput != null\"> "
+				+ "(PRJ_CODE, PRJ_WORK_NAME, PRJ_GROUP, PRJ_STEP, PRJ_DEPTH, PRJ_MANAGER, PRJ_OUPUT, "
+				+ "PRJ_PLAN_START, PRJ_PLAN_END, PRJ_REAL_END, PRJ_WORK_COMPLETION, PRJ_TOTAL_DAYS) "
+					+ "VALUES (#{prjCode}, #{prjWorkName}, #{prjGroup}, #{prjStep}, #{prjDepth}, #{prjManager}, "
+					+ "#{prjOutput}, #{prjPlanStart}, #{prjPlanEnd}, #{prjRealEnd}, #{prjWorkCompletion}, #{prjTotalDays})"
+			+ " </when> "
+			+ "<when text=\"prjManager != null\"> "
+				+ "(PRJ_CODE, PRJ_WORK_NAME, PRJ_GROUP, PRJ_STEP, PRJ_DEPTH, PRJ_MANAGER, PRJ_PLAN_START, "
+				+ "PRJ_PLAN_END, PRJ_REAL_END, PRJ_WORK_COMPLETION, PRJ_TOTAL_DAYS) "
+					+ "VALUES (#{prjCode}, #{prjWorkName}, #{prjGroup}, #{prjStep}, #{prjDepth}, #{prjManager}, #{prjPlanStart}, "
+					+ "#{prjPlanEnd}, #{prjRealEnd}, #{prjWorkCompletion}, #{prjTotalDays})"
+			+ " </when> "
+			+ "<when text=\"prjOutput != null\"> "
+				+ "(PRJ_CODE, PRJ_WORK_NAME, PRJ_GROUP, PRJ_STEP, PRJ_DEPTH, PRJ_OUTPUT, PRJ_PLAN_START, "
+				+ "PRJ_PLAN_END, PRJ_REAL_END, PRJ_WORK_COMPLETION, PRJ_TOTAL_DAYS) "
+					+ "VALUES (#{prjCode}, #{prjWorkName}, #{prjGroup}, #{prjStep}, #{prjDepth}, #{prjOutput}, #{prjPlanStart}, "
+					+ "#{prjPlanEnd}, #{prjRealEnd}, #{prjWorkCompletion}, #{prjTotalDays}) "
+			+ "</when> "
+			+ "<otherwise> "
+				+ "(PRJ_CODE, PRJ_WORK_NAME, PRJ_GROUP, PRJ_STEP, PRJ_DEPTH, PRJ_PLAN_START, "
+				+ "PRJ_PLAN_END, PRJ_REAL_END, PRJ_WORK_COMPLETION, PRJ_TOTAL_DAYS) "
+					+ "VALUES (#{prjCode}, #{prjWorkName}, #{prjGroup}, #{prjStep}, #{prjDepth}, #{prjPlanStart}, #{prjPlanEnd}, "
+					+ "#{prjRealEnd}, #{prjWorkCompletion}, #{prjTotalDays}) "
+			+ "</otherwise> </choose>")
+	public int insertProjectWbsList(ProjectWbsDto prjWbsDto);
 }

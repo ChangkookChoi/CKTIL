@@ -1,8 +1,9 @@
 package com.ck.test.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -123,7 +124,31 @@ public class ProjectController {
 		return projectService.selectProjectWbsList(prjCode);
 	}
 	
-	
+	@RequestMapping(value="insertProjectWbsListAjax", method=RequestMethod.POST)
+	public String insertProjectWbsListAjax(@RequestParam(value="prjWorkNames[]") List<String> prjWorkNamess, ProjectWbsDto prjWbsDtos, HttpServletRequest req) {
+		System.out.println("컨트롤러 진입했습니다.");
+		List<ProjectWbsDto> lists = new ArrayList<ProjectWbsDto>();
+		
+		for(int i=0; i <prjWorkNamess.size() ; i++) {
+			ProjectWbsDto prjWbsDto = new ProjectWbsDto(prjWbsDtos.getPrjCode(),
+					Integer.parseInt(req.getParameterValues("inPrjGroup")[i]),
+					Integer.parseInt(req.getParameterValues("inPrjStep")[i]),
+					Integer.parseInt(req.getParameterValues("inPrjDepth")[i]),
+					Integer.parseInt(req.getParameterValues("workCompletion")[i]),
+					req.getParameterValues("inPrjWorkName")[i],
+					req.getParameterValues("planStart")[i],
+					req.getParameterValues("planEnd")[i],
+					req.getParameterValues("realEnd")[i],
+					req.getParameterValues("inPrjManager")[i],
+					req.getParameterValues("inPrjOutput")[i] );
+			lists.add(prjWbsDto);
+		}
+		System.out.println("출력 결과입니다."+lists);
+		projectService.insertProjectWbsList(lists);
+		
+		
+		return "/projectDetail?prjCode="+prjWbsDtos.getPrjCode();
+	}
 //	@RequestMapping("/selectProjectMemberListAjax")
 //	@ResponseBody
 //	public List<ProjectVO> selectProjectMemberListAjax() {

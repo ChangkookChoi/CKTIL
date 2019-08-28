@@ -37,4 +37,10 @@ public interface ProjectService {
 	
 	/*프로젝트 WBS 정보 불러오기*/
 	public List<ProjectWbsDto> selectProjectWbsList(int prjCode);
+	
+	/*프로젝트 WBS 삭제 */
+	public boolean deleteProjectWbsList(int prjCode);
+	
+	/*프로젝트 WBS 생성 */
+	public boolean insertProjectWbsList(List<ProjectWbsDto> prjWbsDto);
 }
