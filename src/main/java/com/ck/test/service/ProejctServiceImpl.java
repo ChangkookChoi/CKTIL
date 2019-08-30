@@ -85,7 +85,7 @@ public class ProejctServiceImpl implements ProjectService {
 	/*프로젝트 WBS 삭제 */
 	@Override
 	public boolean deleteProjectWbsList(int prjCode) {
-		return dao.deleteProjectWbsList(prjCode) >= 0 ? true : false;
+		return dao.deleteProjectWbsList(prjCode) == 1 ? true : false;
 	}
 	
 	/*프로젝트 WBS 생성 */

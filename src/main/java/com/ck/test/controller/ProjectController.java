@@ -1,7 +1,9 @@
 package com.ck.test.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,6 +19,7 @@ import com.ck.test.beans.MemberOfficeInfo;
 import com.ck.test.beans.ProjectInfoDto;
 import com.ck.test.beans.ProjectWbsDto;
 import com.ck.test.service.ProjectService;
+import com.ck.test.util.Analysis;
 
 @Controller
 public class ProjectController {
@@ -124,30 +127,46 @@ public class ProjectController {
 		return projectService.selectProjectWbsList(prjCode);
 	}
 	
-	@RequestMapping(value="insertProjectWbsListAjax", method=RequestMethod.POST)
-	public String insertProjectWbsListAjax(@RequestParam(value="prjWorkNames[]") List<String> prjWorkNamess, ProjectWbsDto prjWbsDtos, HttpServletRequest req) {
+	@RequestMapping(value="insertProjectWbsListAjaxCon", method=RequestMethod.POST)
+	@ResponseBody
+	public boolean insertProjectWbsListAjaxCon(ProjectInfoDto prjDto, HttpServletRequest req) {
 		System.out.println("컨트롤러 진입했습니다.");
-		List<ProjectWbsDto> lists = new ArrayList<ProjectWbsDto>();
 		
-		for(int i=0; i <prjWorkNamess.size() ; i++) {
-			ProjectWbsDto prjWbsDto = new ProjectWbsDto(prjWbsDtos.getPrjCode(),
-					Integer.parseInt(req.getParameterValues("inPrjGroup")[i]),
-					Integer.parseInt(req.getParameterValues("inPrjStep")[i]),
-					Integer.parseInt(req.getParameterValues("inPrjDepth")[i]),
-					Integer.parseInt(req.getParameterValues("workCompletion")[i]),
-					req.getParameterValues("inPrjWorkName")[i],
-					req.getParameterValues("planStart")[i],
-					req.getParameterValues("planEnd")[i],
-					req.getParameterValues("realEnd")[i],
-					req.getParameterValues("inPrjManager")[i],
-					req.getParameterValues("inPrjOutput")[i] );
-			lists.add(prjWbsDto);
+		System.out.println("insertProjectWbsListAjax : " + prjDto);
+		boolean isc = false;
+		
+		
+		String[] prjTotalDaysSum = req.getParameterValues("inPrjTotalDays");
+		
+		if(prjTotalDaysSum != null) {
+			String[] prjTotalDays = new Analysis(prjDto, prjTotalDaysSum).getTermsFormat();
+			List<ProjectWbsDto> lists = new ArrayList<ProjectWbsDto>();
+			for(int i = 0; i < prjTotalDays.length; i++) {
+				System.out.println("값을 list에 넣는 중 " + i + "번째");
+				ProjectWbsDto prjWbsDto = new ProjectWbsDto(prjDto.getPrjCode(),
+						Integer.parseInt(req.getParameterValues("inPrjGroup")[i]),
+						Integer.parseInt(req.getParameterValues("inPrjStep")[i]),
+						Integer.parseInt(req.getParameterValues("inPrjDepth")[i]),
+						Integer.parseInt(req.getParameterValues("workCompletion")[i]),
+						req.getParameterValues("inPrjWorkName")[i],
+						req.getParameterValues("planStart")[i],
+						req.getParameterValues("planEnd")[i],
+						req.getParameterValues("realEnd")[i],
+						req.getParameterValues("inPrjManager")[i],
+						req.getParameterValues("inPrjOutput")[i],
+						prjTotalDays[i]);
+				lists.add(prjWbsDto);
+				System.out.println("lists에 들어간 값 : "+lists);
+			}
+			System.out.println("prjDto에서 가져온 코드 값" + prjDto.getPrjCode());
+			isc = projectService.deleteProjectWbsList(prjDto.getPrjCode());
+			isc = projectService.insertProjectWbsList(lists);
+			System.out.println("출력 결과입니다."+lists);
+		}else {
+			isc = projectService.deleteProjectWbsList(prjDto.getPrjCode());
 		}
-		System.out.println("출력 결과입니다."+lists);
-		projectService.insertProjectWbsList(lists);
 		
-		
-		return "/projectDetail?prjCode="+prjWbsDtos.getPrjCode();
+		return isc;
 	}
 //	@RequestMapping("/selectProjectMemberListAjax")
 //	@ResponseBody

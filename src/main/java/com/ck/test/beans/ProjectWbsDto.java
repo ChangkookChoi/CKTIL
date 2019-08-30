@@ -1,6 +1,5 @@
 package com.ck.test.beans;
 
-import java.sql.Date;
 
 import lombok.Data;
 
@@ -27,7 +26,7 @@ public class ProjectWbsDto {
 	}
 	
 	public ProjectWbsDto(int prjCode, int prjGroup, int prjStep, int prjDepth, int prjWorkCompletion, String prjWorkName, 
-						String prjPlanStart, String prjPlanEnd, String prjRealEnd, String prjManager, String prjOutput) {
+						String prjPlanStart, String prjPlanEnd, String prjRealEnd, String prjManager, String prjOutput, String prjTotalDays) {
 		this.prjCode = prjCode;
 		this.prjGroup = prjGroup;
 		this.prjStep = prjStep;
@@ -39,6 +38,6 @@ public class ProjectWbsDto {
 		this.prjRealEnd = prjRealEnd;
 		this.prjManager = prjManager;
 		this.prjOutput = prjOutput;
-		
+		this.prjTotalDays = prjTotalDays;
 	}
 }

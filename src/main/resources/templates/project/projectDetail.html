@@ -10,6 +10,7 @@
 <script type="text/javascript" src="js/project/projectList.js"></script>
 <script type="text/javascript" src="js/project/calendar.js"></script>
 <script type="text/javascript" src="js/project/stringBuffer.js"></script>
+<script type="text/javascript" src="js/project/makeRound.js"></script>
 
 <link rel="stylesheet" type="text/css" href="css/project/sweetalert.css?ver=1.2">
 <link rel="stylesheet" type="text/css" href="css/project/bootstrap-theme.min.css">
@@ -78,6 +79,9 @@ $(document).ready(function(){
 <!-- 		<input type="hidden" id="prjCode" name="prjCode" value="${prjCode}" /> -->
 		<table border="1" class="table table-bordered">
 			<thead id='thead'>
+			<input type="hidden" name="prjStart" id="prjStart" th:value="${prjInfo.prjStart}" />
+			<input type="hidden" name="prjEnd" id="prjEnd" th:value="${prjInfo.prjEnd}" />
+			<input type="hidden" name="prjCode" id="prjCode" th:value="${prjInfo.prjCode}" />
 				<tr>
 					<td rowspan="5"><div style="width: 45px;"></div></td>
 					<td rowspan="5"></td>
