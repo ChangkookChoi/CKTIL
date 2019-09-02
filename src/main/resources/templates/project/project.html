@@ -14,14 +14,13 @@
 </head>
 <body>
 	<div>
-	<td><a th:href="'/project?prjCompletion=0'" th:text="'전체 프로젝트'"></a></td>
-	<td><a th:href="'/projectEnd?prjCompletion=1'" th:text="'완료된 프로젝트'"></a></td>
+	<a th:href="@{/project}">전체 프로젝트</a>
+	<a th:href="@{/projectEnd}">완료된 프로젝트</a>
 	</div>
 	<div>
 	<table class="table table-hover">
 		<thead>
 		<tr>
-<!-- 			<th>프로젝트 코드</th> -->
 			<th>프로젝트명</th>
 			<th>PM</th>
 			<th>시작일</th>
@@ -31,10 +30,8 @@
 		</thead>
 		<tbody>
 		<tr th:each="Infos : ${prjInfos}">
-			<input type="hidden" name="prjCode" id="prjCode" th:value="${Infos.prjCode}">
-<!-- 			<td th:text="${Infos.prjCode}" id="prjCode" th:value="${Infos.prjCode}"></td> -->
-			<td><a th:href="'/projectDetail?prjCode='+${Infos.prjCode}" th:text="${Infos.prjName}"></a></td>
-			<td th:text="${Infos.memId}"></td>
+			<td><a th:href="@{/projectDetail(prjCode=${Infos.prjCode})}" th:text="${Infos.prjName}"></a></td>
+			<td>PM들어갈 자리 ajax만들고 넣을 예쩡</td>
 			<td th:text="${Infos.prjStart}"></td>
 			<td th:text="${Infos.prjEnd}"></td>
 			<td th:text="${Infos.prjMothercompany}"></td>
@@ -55,8 +52,7 @@
 				</div>
 				<div class="modal-body">
 					<!-- 프로젝트 생성처리 form -->
-					<form action="/insertProject" method='post'
-						id='frmInsertProjcet'>
+					<form action="/insertProject" method='post'	id='frmInsertProjcet'>
 						<div class='form-group'>
 							<label>프로젝트명</label>
 							<input class='form-control' type="text" name='prjName' id='prjName' />
@@ -81,15 +77,6 @@
 							<label>마더업체</label>
 							<input class='form-control' type="text" name='prjMothercompany' id='prjMothercompany' />
 						</div>
-						<div class='form-group'>
-							<label>PM</label>
-							<input class='form-control' type="text" name='memId' id='memId' />
-						</div>
-						<div class='form-group'>
-							<label>PM</label>
-							<input class='form-control' type="text" name='memName' id='memName' />
-						</div>
-						
 						<div class='modal-footer'>
 							<input type="button" class='btn btn-sm btn-warning' value="확인" onclick="insertProject()" />
 							<input type="reset" class='btn btn-sm btn-warning' value="초기화" />

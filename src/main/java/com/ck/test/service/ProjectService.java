@@ -2,17 +2,17 @@ package com.ck.test.service;
 
 import java.util.List;
 
-import com.ck.test.beans.MemberOfficeInfo;
+import com.ck.test.beans.MemberDto;
 import com.ck.test.beans.ProjectInfoDto;
 import com.ck.test.beans.ProjectWbsDto;
 
 public interface ProjectService {
 	
 	//전체 프로젝트 조회(진행중인 프로젝트)
-	public List<ProjectInfoDto> selectProjectList(int prjCompletion);
+	public List<ProjectInfoDto> selectProjectList();
 	
 	//완료된 프로젝트 조회
-	public List<ProjectInfoDto> selectEndProjectList(int prjCompletion);
+	public List<ProjectInfoDto> selectEndProjectList();
 	
 	//참여중인 프로젝트 조회
 	public List<ProjectInfoDto> selectAttendProjectList(int prjCompletion, String memId);
@@ -27,13 +27,13 @@ public interface ProjectService {
 	public void insertProject(ProjectInfoDto prjInfoDto);
 	
 	/*프로젝트 참여인원 기본 리스트 출력*/
-	public List<MemberOfficeInfo> selectProjectMemberList();
+	public List<MemberDto> selectProjectMemberList();
 	
 	/*프로젝트 참여인원 추가(생성)*/
 	public void insertProjectAttendMembers(String memId, int prjCode);
 	
 	/*특정 프로젝트 참여인원 리스트 출력 */
-	public List<MemberOfficeInfo> selectProjectAttendMemberList(int prjCode);
+	public List<MemberDto> selectProjectAttendMemberList(int prjCode);
 	
 	/*프로젝트 WBS 정보 불러오기*/
 	public List<ProjectWbsDto> selectProjectWbsList(int prjCode);
@@ -43,4 +43,7 @@ public interface ProjectService {
 	
 	/*프로젝트 WBS 생성 */
 	public boolean insertProjectWbsList(List<ProjectWbsDto> prjWbsDto);
+	
+	/*prjCode만 가져오기(완료되지 않은 프로젝트) */
+	public List<ProjectInfoDto> selectPrjCode();
 }

@@ -14,7 +14,6 @@ function insertProject() {
 	var prjMothercompany = $('#prjMothercompany').val();
 	var start = new Date(prjStart);
 	var end = new Date(prjEnd);
-	var memId = $('#memId').val();
 	if(prjName == ''){
 		swal('프로젝트명', '프로젝트명을 입력해주세요');
 		return false;
@@ -95,6 +94,7 @@ function updateProject() {
 	}
 	$('#frmUpdateProjcet').submit();
 }
+
 
 
 //참여인원 선택 생성 폼

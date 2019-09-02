@@ -17,6 +17,7 @@ public class ProjectWbsDto {
 	private String prjOutput;
 	private String prjPlanStart;
 	private String prjPlanEnd;
+	private String prjRealStart;
 	private String prjRealEnd;
 	private int prjWorkCompletion;
 	private String prjTotalDays;
@@ -26,7 +27,7 @@ public class ProjectWbsDto {
 	}
 	
 	public ProjectWbsDto(int prjCode, int prjGroup, int prjStep, int prjDepth, int prjWorkCompletion, String prjWorkName, 
-						String prjPlanStart, String prjPlanEnd, String prjRealEnd, String prjManager, String prjOutput, String prjTotalDays) {
+						String prjPlanStart, String prjPlanEnd, String prjRealStart, String prjRealEnd, String prjManager, String prjOutput, String prjTotalDays) {
 		this.prjCode = prjCode;
 		this.prjGroup = prjGroup;
 		this.prjStep = prjStep;
@@ -35,6 +36,7 @@ public class ProjectWbsDto {
 		this.prjWorkName = prjWorkName;
 		this.prjPlanStart = prjPlanStart;
 		this.prjPlanEnd = prjPlanEnd;
+		this.prjRealStart = prjRealStart;
 		this.prjRealEnd = prjRealEnd;
 		this.prjManager = prjManager;
 		this.prjOutput = prjOutput;

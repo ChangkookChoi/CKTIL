@@ -16,7 +16,5 @@ public class ProjectInfoDto {
 	private String prjEnd;
 	private String prjMothercompany;
 	private int prjCompletion;
-	private String memId;
-	private String memName;
 	
 }

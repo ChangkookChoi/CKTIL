@@ -3,7 +3,7 @@ package com.ck.test.beans;
 import lombok.Data;
 
 @Data
-public class MemberOfficeInfo {
+public class MemberDto {
 	
 	private int memNo;
 	private String memId;

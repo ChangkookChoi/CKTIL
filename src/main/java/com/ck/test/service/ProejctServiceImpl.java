@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ck.test.beans.MemberOfficeInfo;
+import com.ck.test.beans.MemberDto;
 import com.ck.test.beans.ProjectInfoDto;
 import com.ck.test.beans.ProjectWbsDto;
 import com.ck.test.persistence.ProjectDao;
@@ -18,14 +18,14 @@ public class ProejctServiceImpl implements ProjectService {
 	
 	//전체 프로젝트 조회 (진행중인 프로젝트)
 	@Override
-	public List<ProjectInfoDto> selectProjectList(int prjCompletion) {
-		return dao.selectProjectList(prjCompletion);
+	public List<ProjectInfoDto> selectProjectList() {
+		return dao.selectProjectList();
 	}
 	
 	//완료된 프로젝트 조회
 	@Override
-	public List<ProjectInfoDto> selectEndProjectList(int prjCompletion) {
-		return dao.selectEndProjectList(prjCompletion);
+	public List<ProjectInfoDto> selectEndProjectList() {
+		return dao.selectEndProjectList();
 	}
 
 	//참여중인 프로젝트 조회
@@ -50,13 +50,12 @@ public class ProejctServiceImpl implements ProjectService {
 	/*프로젝트 정보 생성 */
 	@Override
 	public void insertProject(ProjectInfoDto prjInfoDto) {
-
 		dao.insertProject(prjInfoDto);
 	}
 	
 	/*프로젝트 참여인원 기본 리스트 출력*/
 	@Override
-	public List<MemberOfficeInfo> selectProjectMemberList() {
+	public List<MemberDto> selectProjectMemberList() {
 
 		return dao.selectProejctMemberList();
 	}
@@ -70,7 +69,7 @@ public class ProejctServiceImpl implements ProjectService {
 
 	/*특정 프로젝트 참여인원 리스트 출력 */
 	@Override
-	public List<MemberOfficeInfo> selectProjectAttendMemberList(int prjCode) {
+	public List<MemberDto> selectProjectAttendMemberList(int prjCode) {
 		
 		return dao.selectProjectAttendMemberList(prjCode);
 	}
@@ -98,5 +97,12 @@ public class ProejctServiceImpl implements ProjectService {
 		chk = dao.insertProjectWbsList(prjWbsDtos) == 1 ? true : false;
 	}
 		return chk;
+	}
+
+	/*prjCode만 가져오기(완료되지 않은 프로젝트) */
+	@Override
+	public List<ProjectInfoDto> selectPrjCode() {
+		
+		return dao.selectPrjCode();
 	}
 }

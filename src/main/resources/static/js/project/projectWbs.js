@@ -39,6 +39,7 @@ $(document).ready(function(){
 				subData.prjOutput = new Array();
 				subData.prjPlanStart = new Array();
 				subData.prjPlanEnd = new Array();
+				subData.prjRealStart = new Array();
 				subData.prjRealEnd = new Array();
 				subData.prjWorkCompletion = new Array();
 				subData.prjTotalDays = new Array();
@@ -51,6 +52,7 @@ $(document).ready(function(){
 					subData.prjOutput[i] = projectWbsDto.prjOutput;
 					subData.prjPlanStart[i] = projectWbsDto.prjPlanStart;
 					subData.prjPlanEnd[i] = projectWbsDto.prjPlanEnd;
+					subData.prjRealStart[i] = projectWbsDto.prjRealStart;
 					subData.prjRealEnd[i] = projectWbsDto.prjRealEnd;
 					subData.prjWorkCompletion[i] = projectWbsDto.prjWorkCompletion;
 					subData.prjTotalDays[i] = projectWbsDto.prjTotalDays;
@@ -66,8 +68,8 @@ $(document).ready(function(){
 		for(var i=0; i<subData.cnt; i++){
 			$('#tbody').append(screenWriteTbody(i, subData.prjGroup[i], subData.prjStep[i], subData.prjDepth[i],
 						subData.prjWorkName[i], subData.prjManager[i], subData.prjOutput[i], 
-						subData.prjPlanStart[i], subData.prjPlanEnd[i], subData.prjRealEnd[i],
-						subData.prjWorkCompletion[i], subData.prjTotalDays[i]));
+						subData.prjPlanStart[i], subData.prjPlanEnd[i], subData.prjRealStart[i],
+						subData.prjRealEnd[i], subData.prjWorkCompletion[i], subData.prjTotalDays[i]));
 		}
 		//일정체크 이벤트
 		scheduleEvent();
@@ -78,7 +80,7 @@ $(document).ready(function(){
 	
 
 /*테이블 tbody 화면에 그리는 함수 (projectWbs 출력) */
-function screenWriteTbody(num, group, step, depth, workName, manager, output, planStart, planEnd, realEnd, workCompletion, totalDays) {
+function screenWriteTbody(num, group, step, depth, workName, manager, output, planStart, planEnd, realStart, realEnd, workCompletion, totalDays) {
 	var tag = new StringBuffer();
 	
 	// 텍스트 "null"이나 값의 null인 경우 대체해서 넣어 줄 텍스트
@@ -112,6 +114,7 @@ function screenWriteTbody(num, group, step, depth, workName, manager, output, pl
 	tag.append("<td style='overflow: hidden;'><input style='margin-left: "+(25*depth)+"px;' type='text' name='inPrjWorkName' value='"+workName+"'></td>");
 	tag.append("<td><input type='date' name='planStart' value='"+planStart+"'></td>");
 	tag.append("<td><input type='date' name='planEnd' value='"+planEnd+"'></td>");
+	tag.append("<td><input type='date' name='realStart' value='"+realStart+"'></td>");
 	tag.append("<td><input type='date' name='realEnd' value='"+realEnd+"'></td>");
 	tag.append("<td><input type='text' name='inPrjManager' value='"+manager+"'></td>");
 	tag.append("<td><input type='text' name='inPrjOutput' value='"+output+"'></td>")
@@ -153,7 +156,7 @@ function createTopList(){
 			}
 		});
 	}
-	$('#tbody').prepend(screenWriteTbody(0, 0, 0, 0, '', '', '', '', '', '', 0, ''));
+	$('#tbody').prepend(screenWriteTbody(0, 0, 0, 0, '', '', '', '', '', '', '', 0, ''));
 	subData.cnt = $('#tbody tr').length;
 	baseData.chk = true;
 }
@@ -200,11 +203,11 @@ function createParentList(num){
 	});
 	
 	if(myPrjDepth == '0'){
-		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', 0, ''));
+		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', '', 0, ''));
 	}else if(myPrjDepth == '1'){
-		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', 0, ''));
+		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', '', 0, ''));
 	}else{
-		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, Number(myPrjDepth)-1, '', '', '', '', '', '', 0, ''));
+		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, Number(myPrjDepth)-1, '', '', '', '', '', '', '', 0, ''));
 	}
 	subData.cnt = $('#tbody tr').length;
 }
@@ -245,9 +248,9 @@ function createList(num) {
 		}
 	});
 	if(myPrjStep == '0') {
-		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', 0, ''));
+		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, Number(myPrjGroup)+1, 0, 0, '', '', '', '', '', '', '', 0, ''));
 	}else {
-		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, myPrjDepth, '', '', '', '', '', '', 0, ''));
+		$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, myPrjDepth, '', '', '', '', '', '', '', 0, ''));
 	}
 	subData.cnt = $('#tbody tr').length;
 }
@@ -278,7 +281,7 @@ function createChildList(num) {
 			return 'createList('+$(this).parents("tr").attr("id")+')';
 		}
 	});
-	$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, Number(myPrjDepth)+1, '', '', '', '', '', '', 0, ''));
+	$('#tbody tr:eq('+num+')').after(screenWriteTbody(num+1, myPrjGroup, Number(myPrjStep)+1, Number(myPrjDepth)+1, '', '', '', '', '', '', '', 0, ''));
 
 	subData.cnt = $('#tbody tr').length;
 }
@@ -500,17 +503,18 @@ function screenWriteThead() {
 	// 월처리
 	var tag = new StringBuffer();
 	if(baseData.start[0] != baseData.end[0]) {
-		if(calendar.iscLeafCheck(baseData.start[0])) {
+		
+		if(calendar.iscLeafCheck(baseData.start[0])) { //윤년 판단 윤년이면 true 반환
 			var startMonthCnt = calendar.LEAF[baseData.start[1]-1] - baseData.start[2] + 1;
-			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
-		}else {
+			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1])); // td 월 한 칸 포맷
+		}else { // 평년인 경우
 			var startMonthCnt = calendar.PLAIN[baseData.start[1]-1] - baseData.start[2] + 1;
 			tag.append(tdTagFormatMonth(startMonthCnt, baseData.start[0], baseData.start[1]));
 		}
-		tag.append(yearMonth(baseData.start[0], Number(baseData.start[1])+1, 12));
+		tag.append(yearMonth(baseData.start[0], Number(baseData.start[1])+1, 12)); //시작월부터 종료월의 colspan값을 구해서 td반환
 		if(Number(baseData.end[0])-Number(baseData.start[0]) > 1) {
 			for(var i=Number(baseData.start[0])+1; i<Number(baseData.end[0]); i++) {
-				tag.append(yearMonth(i, 1, 12));
+				tag.append(yearMonth(i, 1, 12)); //시작월부터 종료월의 colspan값을 구해서 td 반환 (year, startMonth, endMonth)
 			}
 		}
 		tag.append(yearMonth(baseData.end[0], 1, Number(baseData.end[1])-1));
@@ -586,23 +590,23 @@ function screenWriteThead() {
 	// 총, 일간 진척률 처리
 	tag = new StringBuffer();
 	for(var i=0; i<baseData.schedule(); i++) {
-		tag.append("<td class='removeThead progressDaySum'></td>");
+		tag.append("<td class='removeThead progressDaySum'></td>"); // 총 진척률
 	}
 	$("#thead tr:eq(3)").append(tag.toString());
 	tag = new StringBuffer();
 	for(var i=0; i<baseData.schedule(); i++) {
-		tag.append("<td class='removeThead progressDay'></td>");
+		tag.append("<td class='removeThead progressDay'></td>"); // 일간 진척률
 	}
 	$("#thead tr:eq(4)").append(tag.toString());
 	tag = new StringBuffer();
 	for(var i=0; i<baseData.schedule(); i++) {
-		tag.append("<td class='removeThead'></td>");
+		tag.append("<td class='removeThead'></td>"); // 일간 진척률 아랫칸
 	}
 	$("#thead tr:eq(5)").append(tag.toString());
 	
 }
 
-//문자열을쪼개서 값을 검사한다.
+// totalDays 문자열을 쪼개서 값을 검사한다. (1인 곳은 bgcolor yellow, value = 1) 
 function totalDaysAnalysis(data, cnt) {
 	var tag = new StringBuffer();
 	for(var i=0; i<cnt; i++) {
@@ -630,22 +634,22 @@ function scheduleEvent() {
 //화면에 통계를 그려준다
 function progress() {
 	var cntListArray = new Array();
-	for(var i=0; i<subData.cnt; i++) {
+	for(var i=0; i<subData.cnt; i++) { // wbs 데이터(행) 개수만큼 cntListArray에 0을 대입
 		cntListArray[i] = 0;
 	}
 	var cntDayArray = new Array();
 	var cntDaySumArray = new Array();
-	for(var i=0; i<baseData.schedule(); i++) {
+	for(var i=0; i<baseData.schedule(); i++) { // 프로젝트 일수만큼 cntDatArray, cntDaySumArray에 0을 대입
 		cntDayArray[i] = 0;
 		cntDaySumArray[i] = 0;
 	}
-	var cnt = 0;
-	$('input[name=inPrjTotalDays]').each(function(i){
-		if(i%baseData.schedule() == baseData.schedule()-1) {
+	var cnt = 0; // cntListArray에 쓸 cnt 선언
+	$('input[name=inPrjTotalDays]').each(function(i){ // inPrjTotalDays의 개수만큼(i라고 설정) each 돌림
+		if(i%baseData.schedule() == baseData.schedule()-1) { // 작업리스트 첫째줄은 0 둘째줄부터 cnt++; 만약 subData
 			cnt++;
 		}
-		if($(this).val() == '1') {
-			cntListArray[cnt]++;
+		if($(this).val() == '1') { // inPrjTotalDays[i]의 value가 1인 경우
+			cntListArray[cnt]++; // if cnt = 1 / cntListArray[1]++; cntListArray[1] value = 1+ 
 			cntDayArray[i%baseData.schedule()]++;
 		}
 	});
@@ -657,11 +661,11 @@ function progress() {
 		}
 	}
 	var sumTerm = 0;
-	for(var i=0; i<subData.cnt; i++) {
-		sumTerm += cntListArray[i];
+	for(var i=0; i<subData.cnt; i++) { // wbs데이터 개수만큼 for문 진행
+		sumTerm += cntListArray[i]; 
 	}
-	var percent = makeRound(sumTerm);
-	var oldPercent = 100 / sumTerm;
+	var percent = makeRound(sumTerm); // sumTerm 의 소수점 정리 후 percent에 대입
+	var oldPercent = 100 / sumTerm; 
 	$('input[name=inPrjTotalDays]').each(function(){
 		if($(this).val() == '1') {
 			$(this).parent('td').html(percent+"%<input type='hidden' name='inPrjsTotalDays' value='1'>");
@@ -669,15 +673,15 @@ function progress() {
 			$(this).parent('td').html("<input type='hidden' name='inPrjTotalDays' value='0'>");
 		}
 	});
-	if(isFinite(percent)) {
-		$('.progressList').each(function(i){
+	if(isFinite(percent)) { // isFinite(a) a가 유한한 수면 true 아닌 경우(문자 포함) false를 반환
+		$('.progressList').each(function(i){ 
 			$(this).text(makeBaseRound(cntListArray[i]*oldPercent)+'%');
 		}).parents('table').find('.progressDay').each(function(i){
 			$(this).text(makeBaseRound(cntDayArray[i]*oldPercent)+'%');
 		}).parents('thead').find('.progressDaySum').each(function(i){
 			$(this).text(makeBaseRound(cntDaySumArray[i]*oldPercent)+'%');
 		});
-		$('#thead tr:eq(5) td:eq(8)').text(makeBaseRound(cntDaySumArray[cntDaySumArray.length-1]*oldPercent)+'%');
+		$('#thead tr:eq(5) td:eq(9)').text(makeBaseRound(cntDaySumArray[cntDaySumArray.length-1]*oldPercent)+'%');
 	}else {
 		$('.progressList').each(function(i){
 			$(this).text('0%');
@@ -686,6 +690,6 @@ function progress() {
 		}).parents('thead').find('.progressDaySum').each(function(i){
 			$(this).text('0%');
 		});
-		$('#thead tr:eq(5) td:eq(8)').text('0%');		
+		$('#thead tr:eq(5) td:eq(9)').text('0%');		
 	}
 }

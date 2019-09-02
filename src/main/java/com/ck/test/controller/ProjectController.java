@@ -1,9 +1,7 @@
 package com.ck.test.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ck.test.beans.MemberOfficeInfo;
+import com.ck.test.beans.MemberDto;
 import com.ck.test.beans.ProjectInfoDto;
 import com.ck.test.beans.ProjectWbsDto;
 import com.ck.test.service.ProjectService;
@@ -27,17 +25,10 @@ public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
 	
-	@RequestMapping("/")
-	public String index() {
-		
-		return "project/index";
-	}
-	
 	/*전체 프로젝트 조회 */
 	@RequestMapping("/project")
 	public String selectProjectList(Model model) {
-		int prj_completion = 0;
-		List<ProjectInfoDto> prjInfos = projectService.selectProjectList(prj_completion);
+		List<ProjectInfoDto> prjInfos = projectService.selectProjectList();
 		model.addAttribute("prjInfos", prjInfos);
 		return "project/project"; 
 	}
@@ -45,8 +36,7 @@ public class ProjectController {
 	/*완료된 프로젝트 조회 */
 	@RequestMapping("/projectEnd")
 	public String selectEndProjectList(Model model) {
-		int prjCompletion = 1;
-		List<ProjectInfoDto> prjInfos = projectService.selectEndProjectList(prjCompletion);
+		List<ProjectInfoDto> prjInfos = projectService.selectEndProjectList();
 		model.addAttribute("prjInfos", prjInfos);
 		return "project/project"; 
 	}
@@ -56,7 +46,7 @@ public class ProjectController {
 	public String selectProjectView(Model model, int prjCode) {
 		
 		ProjectInfoDto prjInfo = projectService.selectProject(prjCode);
-		List<MemberOfficeInfo> memInfos = projectService.selectProjectAttendMemberList(prjCode);
+		List<MemberDto> memInfos = projectService.selectProjectAttendMemberList(prjCode);
 		List<ProjectWbsDto> prjWbs = projectService.selectProjectWbsList(prjCode);
 		System.out.println("prjInfo내용 : "+prjInfo);
 		model.addAttribute("prjInfo", prjInfo);
@@ -89,9 +79,7 @@ public class ProjectController {
 	/*프로젝트 생성 */
 	@RequestMapping(value="/insertProject", method=RequestMethod.POST)
 	public String insertProject(ProjectInfoDto prjDto) {
-		System.out.println("prjDto : " + prjDto);
 		projectService.insertProject(prjDto);
-		
 		return "redirect:/project";
 	}
 	
@@ -99,7 +87,7 @@ public class ProjectController {
 	@RequestMapping("/selectProjectAttendMemberList")
 	public String selectProjectAttendMembersView(Model model, int prjCode) {
 		
-		List<MemberOfficeInfo> memOfficeInfo = projectService.selectProjectMemberList();
+		List<MemberDto> memOfficeInfo = projectService.selectProjectMemberList();
 		ProjectInfoDto prjDto = projectService.selectProject(prjCode);
 		model.addAttribute("members", memOfficeInfo);
 		model.addAttribute("prjCode", prjDto);
@@ -110,13 +98,17 @@ public class ProjectController {
 	@RequestMapping(value="/insertProjectAttendMembers", method=RequestMethod.POST)
 	@ResponseBody
 	public String insertProjectAttendMembers(@RequestParam(value="checkBoxArr[]") List<String> checkBoxArr, int prjCode) {
+		System.out.println("프로젝트 참여인원 추가 컨트롤러 진입");
 		for(String checkBox : checkBoxArr) {
 			projectService.insertProjectAttendMembers(checkBox, prjCode);
 		}
 		
+		System.out.println("프로젝트 참여인원 추가 컨트롤러 작업 완료");
 		return "project/project";
 	}
 	
+	
+	//Project WBS List 불러오는 ajax
 	@RequestMapping(value="selectProjectWbsListAjax", method=RequestMethod.POST)
 	@ResponseBody
 	public List<ProjectWbsDto> selectProjectWbsListAjax(int prjCode){
@@ -127,6 +119,7 @@ public class ProjectController {
 		return projectService.selectProjectWbsList(prjCode);
 	}
 	
+	//Project WBS List 저장하는 ajax
 	@RequestMapping(value="insertProjectWbsListAjaxCon", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean insertProjectWbsListAjaxCon(ProjectInfoDto prjDto, HttpServletRequest req) {
@@ -137,6 +130,8 @@ public class ProjectController {
 		
 		
 		String[] prjTotalDaysSum = req.getParameterValues("inPrjTotalDays");
+		System.out.println("prjTotalDaysSum 출력 결과 : " + prjTotalDaysSum);
+		System.out.println("req.getParameterValues(\"inPrjTotalDays\") 출력 결과 : " + req.getParameterValues("inPrjTotalDays"));
 		
 		if(prjTotalDaysSum != null) {
 			String[] prjTotalDays = new Analysis(prjDto, prjTotalDaysSum).getTermsFormat();
@@ -151,6 +146,7 @@ public class ProjectController {
 						req.getParameterValues("inPrjWorkName")[i],
 						req.getParameterValues("planStart")[i],
 						req.getParameterValues("planEnd")[i],
+						req.getParameterValues("realStart")[i],
 						req.getParameterValues("realEnd")[i],
 						req.getParameterValues("inPrjManager")[i],
 						req.getParameterValues("inPrjOutput")[i],
@@ -160,7 +156,9 @@ public class ProjectController {
 			}
 			System.out.println("prjDto에서 가져온 코드 값" + prjDto.getPrjCode());
 			isc = projectService.deleteProjectWbsList(prjDto.getPrjCode());
+			
 			isc = projectService.insertProjectWbsList(lists);
+			
 			System.out.println("출력 결과입니다."+lists);
 		}else {
 			isc = projectService.deleteProjectWbsList(prjDto.getPrjCode());
@@ -168,6 +166,24 @@ public class ProjectController {
 		
 		return isc;
 	}
+	
+	
+	
+	
+//	
+//	@RequestMapping("selectAttendProjectMembersAjax")
+//	@ResponseBody
+//	public List<MemberDto> selectAttendProjectMembersAjax(int prjCode){
+//		
+//		List<ProjectInfoDto> prjCodes = projectService.selectPrjCode();
+//		List<MemberDto> memDto = null;
+//		for(int i=0; i <= prjCodes.size(); i++) {
+//			memDto = projectService.selectProjectAttendMemberList(prjCode);
+//		}
+//		
+//		return memDto;
+//	}
+//	
 //	@RequestMapping("/selectProjectMemberListAjax")
 //	@ResponseBody
 //	public List<ProjectVO> selectProjectMemberListAjax() {
